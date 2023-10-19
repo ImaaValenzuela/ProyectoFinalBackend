@@ -1,7 +1,16 @@
+// 
 import express from "express";
+// DB
 import mongoose from "mongoose";
+// socket
 import { Server } from "socket.io";
+//vista
 import handlebars from "express-handlebars"
+//sessions
+import session from 'express-session';
+import MongoStore from 'connect-mongo';
+import passport from "passport";
+import initializePassport from "./config/passport.config.js";
 
 //utils
 import __dirname from './utils.js';
@@ -34,7 +43,27 @@ app.use(express.urlencoded({ extended: true }));
 
 // mongoose
 // uri para la app del servidor mongo atlas
-const uri = 'mongodb+srv://IMANOLO:coder@cluster0.jfozy2v.mongodb.net/';
+const MONGO_URI = 'mongodb+srv://IMANOLO:coder@cluster0.jfozy2v.mongodb.net/';
+const MONGO_DB_NAME = 'ecommerce';
+
+
+app.use(session({
+    store: MongoStore.create({
+        mongoUrl: MONGO_URI,
+        dbName: MONGO_DB_NAME,
+        mongoOptions:{
+            useNewUrlParser: true,
+            useUnifiedTopology: true
+        },
+        ttl: 15
+    }),
+    secret: '123456',
+    resave: true, // mantiene la session activa
+    saveUninitialized: true // guarda cualquier cosa asi sea vacio
+}));
+initializePassport()
+app.use(passport.initialize());
+app.use(passport.session());
 
 /**
  * query / consulta
@@ -44,25 +73,28 @@ const uri = 'mongodb+srv://IMANOLO:coder@cluster0.jfozy2v.mongodb.net/';
 mongoose.set('strictQuery', false);
 
 /**
- * primer parametro la uri del servidor,
+ * primer parametro la MONGO_URI del servidor,
  * el segundo parametro es el nombre de la base de datos a conectar,
  * por ultimo un middleware para capturar errores, si aparece un error podemos
  * atajarlo y sino podemos hacer correr el server sin problema,
  * esto sirve para evitar mensajes de errores en consolay afectar al server
  */
 const env = () => {
-    mongoose.connect(uri, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-    }).then(() => {
+    mongoose.connect(MONGO_URI, { dbName: MONGO_DB_NAME })
+    .then(() => {
+      // Conexión exitosa
         console.log('DB connected');
-        const httpServer = app.listen(8080, () => console.log('listening'));
+        const httpServer = app.listen(8080, () => console.log('listening...'));
         httpServer.on('error', () => console.log('Error'));
         const io = new Server(httpServer);
         run(io, app);
-    }).catch(error => {
-        console.log('No se pudo conectar a la DB:', error);
+    })
+    .catch((error) => {
+      // Manejo de errores en caso de una conexión fallida
+        console.error('No se pudo conectar a la DB', error);
     });
 }
+
+
 
 env();
