@@ -5,8 +5,8 @@ import local from 'passport-local';
 import GitHubStrategy from 'passport-github2';
 import jwt from 'passport-jwt';
 
-import userModel from '../dao/models/user.model.js';
-import cartModel from '../dao/models/cart.model.js';
+import userModel from '../dao/mongo/models/user.model.js';
+import cartModel from '../dao/mongo/models/cart.model.js';
 
 import { createHash, extractCookie, generateToken, isValidPassword } from '../utils.js';
 import { PRIVATE_KEY } from "./credentials.js";
@@ -30,6 +30,7 @@ const initializePassport = () => {
                 return done(null, false);
             }
 
+            
             const newUser = {
                 first_name,
                 last_name,
@@ -73,8 +74,8 @@ const initializePassport = () => {
     }))
 
     passport.use('github', new GitHubStrategy({
-        clientID: "390e932424685a8c37f0",
-        clientSecret: "9c307ff79aa28acb7c7abe0ed0de1f326d6f72b0",
+        clientID: "Iv1.3991cd4344ad90aa",
+        clientSecret: "f3b507fc533c28f3b18482eb0cc00e6e7e6d147a",
         callbackURL: "http://127.0.0.1:8080/session/githubcallback",
         scope: ['user:email']
     }, async (accessToken, refreshToken, profile, done) => {
