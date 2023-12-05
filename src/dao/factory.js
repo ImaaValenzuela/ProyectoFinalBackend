@@ -1,35 +1,49 @@
 import config from "../config/config.js";
 import mongoose from "mongoose";
 
-export let DB
+export default {};
+export let Cart;
+export let Message;
+export let Product;
+export let User;
+export let Ticket;
 
+console.log(`PERSISTENCE: ${config.persistence}`);
 switch (config.persistence) {
     case 'MONGO':
-        console.log('Mongo connecte');    
-
-        const connection = mongoose.connect('mongodb://127.0.0.1:27017', {
+        console.log('MONGO: ');
+        mongoose.connect(config.mongo_uri, {
             useNewUrlParser: true,
             useUnifiedTopology: true,
-            dbName: "MyDB_28"
-        })
-        const DBMongo = {
-                user: await import('./mongo/user.mongo.js'),
-                products: await import('./mongo/products.mongo.js'),
-                cart: await import('./mongo/cart.mongo.js'),
-                message: await import('./mongo/message.mongo.js')
-            };
-        DB = DBMongo;
+            dbName: config.mongo_db_name
+        }, () => console.log('Mongo connected'));
+        
+        const { default: UserMongo } = import('./mongo/user.mongo.js')
+        const { default: ProductMongo } = import('./mongo/product.mongo.js')
+        const { default: CartMongo } = import('./mongo/cart.mongo.js')
+        const { default: MessageMongo } = import('./mongo/message.mongo.js')
+        const { default: TicketMongo } = import('./mongo/ticket.mongo.js');
+
+        Ticket = TicketMongo;
+        Product = ProductMongo;
+        Message = MessageMongo;
+        Cart = CartMongo;
+        User = UserMongo;
 
         break;
     case 'MEMORY':
-        console.log('Persistence with Memory')
-        const DBMemory = {
-            user: await import('./memory/user.memory.js'),
-            products: await import('./memory/products.memory.js'),
-            cart: await import('./memory/cart.memory.js'),
-            message: await import('./memory/message.memory.js')
-        };
-        DB = DBMemory; 
+        console.log('Persistence with Memory');
+        const { default: UserFile } = import('./memory/user.memory.js')
+        const { default: ProductFile } = import('./memory/products.memory.js')
+        const { default: CartFile } = import('./memory/cart.memory.js')
+        const { default: MessageFile } = import('./memory/message.memory.js')
+        const { default: TicketFile } = import('./memory/ticket.memory.js');
+        
+        Ticket = TicketFile;
+        Product = ProductFile;
+        Message = MessageFile;
+        Cart = CartFile;
+        User = UserFile;
         break;
     default:
         break;

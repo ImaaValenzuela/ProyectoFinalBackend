@@ -1,7 +1,15 @@
-import { DB } from "../dao/factory.js";
-import DBRepository from "./db.repository.js";
+import { User, Product, Cart, Message, Ticket } from "../dao/factory.js";
 
-export const userService = new DBRepository(new DB.user());
-export const cartService = new DBRepository(new DB.cart());
-export const productService = new DBRepository(new DB.products());
-export const messageService = new DBRepository(new DB.message());
+import ProductRepository from "./prod.repository.js";
+import CartRepository from './cart.repository.js';
+import UserRepository from "./user.repository.js";
+import MessageRepository from "./msg.repository.js";
+import TicketRepository from "./ticket.repository.js";
+import Mocking from '../dao/mocking/products.mock.js';
+
+export const TicketService = new TicketRepository( Ticket);
+export const UserService = new UserRepository( User);
+export const CartService = new CartRepository( Cart);
+export const ProductService = new ProductRepository( Product);
+export const MessageService = new MessageRepository( Message);
+export const MockService = new Mocking(100);

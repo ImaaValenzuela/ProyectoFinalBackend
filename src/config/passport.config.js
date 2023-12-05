@@ -63,6 +63,7 @@ const initializePassport = () => {
 
             if (!isValidPassword(user, password)) return done(null, false);
 
+            //genera el token del jwt
             const token = generateToken(user);
 
             user.token = token;
@@ -74,8 +75,8 @@ const initializePassport = () => {
     }))
 
     passport.use('github', new GitHubStrategy({
-        clientID: "Iv1.3991cd4344ad90aa",
-        clientSecret: "f3b507fc533c28f3b18482eb0cc00e6e7e6d147a",
+        clientID: "390e932424685a8c37f0",
+        clientSecret: "9c307ff79aa28acb7c7abe0ed0de1f326d6f72b0",
         callbackURL: "http://127.0.0.1:8080/session/githubcallback",
         scope: ['user:email']
     }, async (accessToken, refreshToken, profile, done) => {
@@ -117,6 +118,7 @@ const initializePassport = () => {
         secretOrKey: PRIVATE_KEY,
     }, async(jwt_payload, done)=>{
         try {
+            // returna el user
             return done(null, jwt_payload);
         } catch (error) {
             return done(error);

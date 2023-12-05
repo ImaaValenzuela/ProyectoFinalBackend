@@ -1,4 +1,4 @@
-import FileManager from "./fileManager.js";
+import FileManager from "../memory/fileManager";
 
 export default class User {
 

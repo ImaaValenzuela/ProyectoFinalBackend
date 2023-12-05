@@ -3,6 +3,7 @@ import express from "express";
 // DB
 import mongoose from "mongoose";
 // socket
+import { Server } from "socket.io";
 //vista
 import handlebars from "express-handlebars"
 // cookie
@@ -16,7 +17,7 @@ import initializePassport from "./config/passport.config.js";
 //utils
 import config from "./config/config.js";
 import __dirname from './utils.js';
-import MongoSingleton from "./mongoSingleton.js";
+import run from "./run.js";
 
 const app = express();
 
@@ -54,7 +55,7 @@ app.use(session({
     store: MongoStore.create({
         mongoUrl: config.mongo_uri,
         dbName: config.mongo_db_name,
-        mongoOptions:{
+        mongoOptions: {
             useNewUrlParser: true,
             useUnifiedTopology: true
         },
@@ -83,7 +84,19 @@ mongoose.set('strictQuery', false);
  * esto sirve para evitar mensajes de errores en consolay afectar al server
  */
 const env = () => {
-    MongoSingleton.getInstance(app);
+    //console.log(' mongo singleton');
+    // corremos el servidor con estas lineas
+    // se ejecuta en el puerto 8080
+    // 127.0.0.1:8080
+    const httpServer = app.listen(config.port, () => console.log('listening...'));
+    // capturamos cualquier error
+    httpServer.on('error', () => console.log('Error'));
+    // iniciamos server web socket.io
+    const io = new Server(httpServer);
+
+    // funcion importada con todos los routes
+    run(io, app);
+    //MongoSingleton.getInstance(app);
 }
 
 env();

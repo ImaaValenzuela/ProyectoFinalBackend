@@ -1,6 +1,6 @@
 import FileManager from "./fileManager.js";
 
-export default class User {
+export default class Message {
 
     constructor() {
         this.fileManager = new FileManager("db_file/messages.json")
@@ -8,14 +8,6 @@ export default class User {
 
     get = async() => {
         return await this.fileManager.get()
-    }
-
-    getOneByID = async(id) => {
-        return await this.fileManager.getOneByParam("id", id)
-    }
-
-    getOneByEmail = async(email) => {
-        return await this.fileManager.getOneByParam("email", email)
     }
 
     create = async(data) => {
