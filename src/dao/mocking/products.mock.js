@@ -1,25 +1,57 @@
-import FileManager from "../memory/fileManager";
+import { productsMock } from "../../utils.js";
+import ProductDTO from "../DTO/products.dto.js";
 
-export default class User {
-
-    constructor() {
-        this.fileManager = new FileManager("db_file/messages.json")
+export default class Mocking{
+    constructor(cant){
+        this.products = productsMock(cant);
     }
 
-    get = async() => {
-        return await this.fileManager.get()
+    getAll = ()=>{
+        try {
+            return this.products;
+        } catch (error) {
+            console.log('productos not loaded');
+        }
     }
 
-    getOneByID = async(id) => {
-        return await this.fileManager.getOneByParam("id", id)
+    getOne = (pid)=>{
+        try {
+            return this.products.find(p => p.id == pid);
+        } catch (error) {
+            console.log('product not found');
+        }
     }
 
-    getOneByEmail = async(email) => {
-        return await this.fileManager.getOneByParam("email", email)
+    create = (product) =>{
+        try {
+            const productToInser = ProductDTO(product);
+            this.products.push(productToInser);
+            return productToInser;
+        } catch (error) {
+            console.log('Error to create');
+        }
     }
 
-    create = async(data) => {
-        return await this.fileManager.add(data)
+    update = (pid, product)=>{
+        try {
+            const productToInser = ProductDTO(product);
+            const idx = this.products.findIndex(p => p.id == pid);
+            if(idx == -1) return error;
+            this.products[idx] = productToInser;
+            return productToInser;
+        } catch (error) {
+            console.log('product not found');
+        }
     }
 
+    delete = (pid) =>{
+        try {
+            const idx = this.products.findIndex(p => p.id == pid);
+            if(idx == -1) return error;
+            this.products.splice(idx,1);
+            return true;
+        } catch (error) {
+            console.log('Product not found');
+        }
+    }
 }
